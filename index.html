@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1DB954">
+    <title>Music Recommender PWA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Music Recommender</h1>
+            <p>Sube tu playlist y recibe recomendaciones personalizadas</p>
+        </header>
+
+        <section id="auth-section" class="card">
+            <h2>Conectar con Spotify</h2>
+            <button id="login-btn" class="btn-primary">Iniciar sesión con Spotify</button>
+        </section>
+
+        <section id="upload-section" class="card hidden">
+            <h2>Cargar Playlist</h2>
+            <div class="upload-area" id="upload-area">
+                <input type="file" id="file-input" accept=".json,.csv,.m3u,.txt" hidden>
+                <p>Arrastra tu archivo de playlist aquí o haz clic para seleccionar</p>
+                <p class="small">Formatos: JSON (Spotify), CSV, M3U, TXT</p>
+            </div>
+            <div id="playlist-info" class="hidden">
+                <p>Canciones detectadas: <span id="track-count">0</span></p>
+            </div>
+        </section>
+
+        <section id="results-section" class="card hidden">
+            <h2>Recomendaciones para ti</h2>
+            <div id="recommendations-grid" class="recommendations-grid"></div>
+            <button id="create-playlist-btn" class="btn-secondary">Crear Playlist en Spotify</button>
+        </section>
+
+        <div id="loading" class="hidden">
+            <div class="spinner"></div>
+            <p>Generando recomendaciones...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
