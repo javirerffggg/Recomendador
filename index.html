@@ -4,47 +4,206 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1DB954">
-    <title>Music Recommender PWA</title>
+    <title>Music Recommender PWA Pro</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
 </head>
-<body>
+<body data-theme="dark">
     <div class="container">
         <header>
-            <h1>🎵 Music Recommender</h1>
-            <p>Sube tu playlist y recibe recomendaciones personalizadas</p>
+            <h1>🎵 Music Recommender Pro</h1>
+            <p>Recomendaciones musicales inteligentes con IA</p>
+            <div class="header-controls">
+                <button id="theme-toggle" class="icon-btn" title="Cambiar tema">🌙</button>
+                <button id="history-btn" class="icon-btn" title="Historial">📜</button>
+                <button id="notifications-btn" class="icon-btn" title="Notificaciones">🔔</button>
+            </div>
         </header>
 
-        <section id="auth-section" class="card">
-            <h2>Conectar con Spotify</h2>
-            <button id="login-btn" class="btn-primary">Iniciar sesión con Spotify</button>
+        <!-- Selector de Plataforma -->
+        <section id="platform-section" class="card">
+            <h2>Selecciona tu plataforma</h2>
+            <div class="platform-selector">
+                <button class="platform-btn active" data-platform="spotify">
+                    <span class="platform-icon">🎵</span>
+                    <span>Spotify</span>
+                </button>
+                <button class="platform-btn" data-platform="tidal">
+                    <span class="platform-icon">🌊</span>
+                    <span>Tidal</span>
+                </button>
+            </div>
         </section>
 
+        <!-- Autenticación -->
+        <section id="auth-section" class="card">
+            <h2>Conectar cuenta</h2>
+            <button id="login-btn" class="btn-primary">
+                <span class="btn-icon">🔐</span>
+                <span>Iniciar sesión con <span id="platform-name">Spotify</span></span>
+            </button>
+        </section>
+
+        <!-- Método de Carga -->
+        <section id="method-section" class="card hidden">
+            <h2>¿Cómo quieres cargar tu música?</h2>
+            <div class="method-selector">
+                <button id="method-import" class="method-btn active">
+                    <span class="method-icon">📥</span>
+                    <span>Importar desde tu cuenta</span>
+                </button>
+                <button id="method-upload" class="method-btn">
+                    <span class="method-icon">📁</span>
+                    <span>Subir archivo</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Importar Playlists -->
+        <section id="import-section" class="card hidden">
+            <h2>Selecciona una playlist</h2>
+            <div id="playlists-grid" class="playlists-grid">
+                <div class="loading-spinner"></div>
+            </div>
+        </section>
+
+        <!-- Subir Archivo -->
         <section id="upload-section" class="card hidden">
-            <h2>Cargar Playlist</h2>
+            <h2>Cargar archivo de playlist</h2>
             <div class="upload-area" id="upload-area">
                 <input type="file" id="file-input" accept=".json,.csv,.m3u,.txt" hidden>
-                <p>Arrastra tu archivo de playlist aquí o haz clic para seleccionar</p>
-                <p class="small">Formatos: JSON (Spotify), CSV, M3U, TXT</p>
-            </div>
-            <div id="playlist-info" class="hidden">
-                <p>Canciones detectadas: <span id="track-count">0</span></p>
+                <div class="upload-icon">📤</div>
+                <p>Arrastra tu archivo aquí</p>
+                <p class="small">o haz clic para seleccionar</p>
+                <p class="small">Formatos: JSON, CSV, M3U, TXT</p>
             </div>
         </section>
 
+        <!-- Selección de Seeds -->
+        <section id="seeds-section" class="card hidden">
+            <h2>Selecciona hasta 5 canciones base</h2>
+            <p class="section-description">Estas canciones definirán el tipo de recomendaciones que recibirás</p>
+            <div id="tracks-list" class="tracks-list"></div>
+            <button id="confirm-seeds-btn" class="btn-secondary" disabled>
+                Continuar con <span id="seeds-count">0</span> canciones
+            </button>
+        </section>
+
+        <!-- Filtros Avanzados -->
+        <section id="filters-section" class="card hidden">
+            <h2>Personaliza tus recomendaciones</h2>
+            <div class="filters-grid">
+                <div class="filter-control">
+                    <label>
+                        <span class="filter-icon">⚡</span>
+                        <span>Energía</span>
+                        <span class="filter-value" id="energy-value">0.5</span>
+                    </label>
+                    <input type="range" id="energy-slider" min="0" max="1" step="0.1" value="0.5">
+                    <div class="filter-labels">
+                        <span>Tranquila</span>
+                        <span>Energética</span>
+                    </div>
+                </div>
+
+                <div class="filter-control">
+                    <label>
+                        <span class="filter-icon">💃</span>
+                        <span>Bailabilidad</span>
+                        <span class="filter-value" id="danceability-value">0.5</span>
+                    </label>
+                    <input type="range" id="danceability-slider" min="0" max="1" step="0.1" value="0.5">
+                    <div class="filter-labels">
+                        <span>Lenta</span>
+                        <span>Bailable</span>
+                    </div>
+                </div>
+
+                <div class="filter-control">
+                    <label>
+                        <span class="filter-icon">📊</span>
+                        <span>Popularidad</span>
+                        <span class="filter-value" id="popularity-value">50</span>
+                    </label>
+                    <input type="range" id="popularity-slider" min="0" max="100" step="10" value="50">
+                    <div class="filter-labels">
+                        <span>Ocultas</span>
+                        <span>Populares</span>
+                    </div>
+                </div>
+
+                <div class="filter-control">
+                    <label>
+                        <span class="filter-icon">🎹</span>
+                        <span>Instrumentalidad</span>
+                        <span class="filter-value" id="instrumentalness-value">0.5</span>
+                    </label>
+                    <input type="range" id="instrumentalness-slider" min="0" max="1" step="0.1" value="0.5">
+                    <div class="filter-labels">
+                        <span>Vocal</span>
+                        <span>Instrumental</span>
+                    </div>
+                </div>
+
+                <div class="filter-control">
+                    <label>
+                        <span class="filter-icon">🎼</span>
+                        <span>Cantidad de canciones</span>
+                        <span class="filter-value" id="limit-value">20</span>
+                    </label>
+                    <input type="range" id="limit-slider" min="10" max="50" step="5" value="20">
+                    <div class="filter-labels">
+                        <span>10</span>
+                        <span>50</span>
+                    </div>
+                </div>
+            </div>
+            <button id="generate-btn" class="btn-primary">
+                <span class="btn-icon">✨</span>
+                <span>Generar Recomendaciones</span>
+            </button>
+        </section>
+
+        <!-- Resultados -->
         <section id="results-section" class="card hidden">
-            <h2>Recomendaciones para ti</h2>
+            <div class="results-header">
+                <h2>Tus recomendaciones personalizadas</h2>
+                <div class="results-actions">
+                    <button id="share-btn" class="btn-icon-text">
+                        <span>🔗</span>
+                        <span>Compartir</span>
+                    </button>
+                </div>
+            </div>
             <div id="recommendations-grid" class="recommendations-grid"></div>
-            <button id="create-playlist-btn" class="btn-secondary">Crear Playlist en Spotify</button>
+            <div class="results-footer">
+                <button id="create-playlist-btn" class="btn-secondary">
+                    <span class="btn-icon">💾</span>
+                    <span>Crear Playlist</span>
+                </button>
+            </div>
         </section>
 
+        <!-- Historial -->
+        <section id="history-section" class="card hidden">
+            <h2>Historial de recomendaciones</h2>
+            <div id="history-list" class="history-list"></div>
+        </section>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- Loading Overlay -->
         <div id="loading" class="hidden">
             <div class="spinner"></div>
-            <p>Generando recomendaciones...</p>
+            <p id="loading-text">Cargando...</p>
         </div>
+
+        <!-- Audio Player (hidden) -->
+        <audio id="audio-player" preload="none"></audio>
     </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
